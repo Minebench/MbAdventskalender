@@ -1,0 +1,11 @@
+name: ${project.name}
+version: ${minecraft.plugin.version}
+main: de.minebench.adventskalender.MbAdventskalender
+authors: [Phoenix616]
+website: https://minebench.de
+commands:
+   adventskalender:
+      description: MbAdventskalender Befehl
+      usage: /adventskalender
+      aliases: [mbadventskalender, mbadvent, advent]
+      permission: "mbadventskalender.command"

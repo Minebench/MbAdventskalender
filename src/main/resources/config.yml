@@ -1,0 +1,94 @@
+gui:
+  title: "Adventskalender"
+  layout:
+  # "---------"
+  - " d dd d d"
+  - "d d  d d "
+  - "d d d d d"
+  - "d  dd  dd"
+  - " dd d d d"
+  # insert items
+  filler:
+    ==: org.bukkit.inventory.ItemStack
+    type: LEAVES
+    damage: 1
+  icons:
+    day:
+      unavailable: {}
+      available: {}
+      retrieved: {}
+      missed: {}
+    advent:
+      unavailable: {}
+      available: {}
+      retrieved: {}
+      missed: {}
+    christmas:
+      unavailable: {}
+      available: {}
+      retrieved: {}
+      missed: {}
+text:
+  unavailable: "&cDu musst noch warten!"
+  available: "&aKlicke um dieses GEschenk zu öffnen!"
+  retrieved: "&7Schon geöffnet."
+  missed: "&7Diesen Tag hast du leider verpasst :("
+  day: "&b%day%. Dezember%title%"
+  advent: |-
+    &b%day%. Dezember
+    &6%advent%. Advent
+  christmas: |-
+    &b24. Dezember
+    &6Heiligabend
+# How many days one can miss before a reward can no longer be claimed
+missed-days: 1
+days:
+  "1":
+    reward: []
+  "2":
+    reward: []
+  "3":
+    reward: []
+  "4":
+    reward: []
+  "5":
+    reward: []
+  "6":
+    title: "\n&cNikolaus"
+    reward: []
+  "7":
+    reward: []
+  "8":
+    reward: []
+  "9":
+    reward: []
+  "10":
+    reward: []
+  "11":
+    reward: []
+  "12":
+    reward: []
+  "13":
+    reward: []
+  "14":
+    reward: []
+  "15":
+    reward: []
+  "16":
+    reward: []
+  "17":
+    reward: []
+  "18":
+    reward: []
+  "19":
+    reward: []
+  "20":
+    reward: []
+  "21":
+    reward: []
+  "22":
+    reward: []
+  "23":
+    reward: []
+  "24":
+    reward: []
