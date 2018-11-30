@@ -246,12 +246,17 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                         InventoryGui adminInv = new InventoryGui(this, day + ". Rewards", Collections.nCopies(rows, String.join("", Collections.nCopies(9, "i"))).toArray(new String[0]));
                         GuiElementGroup group = new GuiElementGroup('i');
                         GuiElement.Action clickAction = adminClick -> {
+                            ItemStack cursor = adminClick.getEvent().getCursor();
+                            ItemStack current = adminClick.getEvent().getCurrentItem() != null ? new ItemStack(adminClick.getEvent().getCurrentItem()) : null;
                             if (adminClick.getType() == ClickType.MIDDLE) {
-                                return false;
+                                if (cursor == null && current != null) {
+                                    current.setAmount(current.getMaxStackSize());
+                                    getServer().getScheduler().runTask(this, () -> adminClick.getEvent().setCursor(current));
+                                }
+                                return true;
                             } else if (adminClick.getType() != ClickType.LEFT) {
                                 return true;
                             }
-                            ItemStack cursor = adminClick.getEvent().getCursor();
                             List<ItemStack> currentRewards = (List<ItemStack>) dayRewards.get(day);
                             if (cursor == null) {
                                 ((StaticGuiElement) adminClick.getElement()).setItem(null);
@@ -264,10 +269,11 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                                     currentRewards.add(cursor);
                                 }
                             }
+                            getServer().getScheduler().runTask(this, () -> adminClick.getEvent().setCursor(current));
                             adminClick.getGui().draw();
                             daysConfig.getConfig().set(day + ".rewards", currentRewards);
                             daysConfig.saveConfig();
-                            return false;
+                            return true;
                         };
                         for (ItemStack reward : rewards) {
                             group.addElement(new StaticGuiElement('i', reward, clickAction));
