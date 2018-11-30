@@ -258,7 +258,11 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                                 currentRewards.remove(adminClick.getSlot());
                             } else {
                                 ((StaticGuiElement) adminClick.getElement()).setItem(cursor);
-                                currentRewards.set(adminClick.getSlot(), cursor);
+                                if (currentRewards.size() > adminClick.getSlot()) {
+                                    currentRewards.set(adminClick.getSlot(), cursor);
+                                } else {
+                                    currentRewards.add(cursor);
+                                }
                             }
                             adminClick.getGui().draw();
                             daysConfig.getConfig().set(day + ".rewards", currentRewards);
