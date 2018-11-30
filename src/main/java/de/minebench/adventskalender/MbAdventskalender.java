@@ -174,8 +174,12 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                 }
             }
         }
-        if (!(sender instanceof Player)) {
-            return false;
+        if (target == null) {
+            if (sender instanceof Player) {
+                target = (Player) sender;
+            } else {
+                return false;
+            }
         }
 
         InventoryGui gui = new InventoryGui(this, getConfig().getString("gui.title"), getConfig().getStringList("gui.layout").toArray(new String[0]));
