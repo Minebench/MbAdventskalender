@@ -36,12 +36,14 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +54,9 @@ import java.util.logging.Level;
 
 public final class MbAdventskalender extends JavaPlugin implements Listener {
     private ConfigAccessor playerConfig;
+    private ConfigAccessor daysConfig;
     private final Multimap<UUID, Integer> retrievedDays = MultimapBuilder.hashKeys().linkedHashSetValues(24).build();
+    private final Multimap<Integer, ItemStack> dayRewards = MultimapBuilder.hashKeys().linkedListValues().build();
 
     private ItemStack filler;
 
@@ -69,6 +73,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         Collections.shuffle(dayOrder, new Random(Calendar.getInstance().get(Calendar.YEAR)));
 
         playerConfig = new ConfigAccessor(this, "players.yml");
+        daysConfig = new ConfigAccessor(this, "days.yml");
         loadConfig();
         getCommand("adventskalender").setExecutor(this);
         getServer().getPluginManager().registerEvents(this, this);
@@ -94,6 +99,21 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                 retrievedDays.putAll(UUID.fromString(key), playerConfig.getConfig().getIntegerList("players." + key));
             } catch (IllegalArgumentException e) {
                 getLogger().log(Level.WARNING, key + " is not a valid player UUID in players.yml?");
+            }
+        }
+
+        daysConfig.saveDefaultConfig();
+        daysConfig.reloadConfig();
+
+        for (int day = 1; day <= 24; day++) {
+            List<Map<?, ?>> mapList = daysConfig.getConfig().getMapList(day + ".reward");
+            for (Map<?, ?> map : mapList) {
+                ItemStack item = ItemStack.deserialize((Map<String, Object>) map);
+                if (item != null && item.getType() != null) {
+                    dayRewards.put(day, item);
+                } else {
+                    getLogger().log(Level.WARNING, "An item for day " + day + " is invalid! (config: " + map + ")");
+                }
             }
         }
     }
@@ -202,10 +222,62 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                 } else {
                     element = getElement(type + ".available", replacements);
                     element.setAction(click -> {
+                        if (click.getType() == ClickType.MIDDLE) {
+                            return true;
+                        }
                         giveRewards(click.getEvent().getWhoClicked(), day);
                         click.getGui().draw();
                         return true;
                     });
+                }
+                if (target.hasPermission("mbadventskalender.admin")) {
+                    GuiElement.Action adminAction = click -> {
+                        if (click.getType() != ClickType.MIDDLE) {
+                            return true;
+                        }
+                        Collection<ItemStack> rewards = dayRewards.get(day);
+                        int rows = (rewards.size() + 1) / 9 + 1;
+                        InventoryGui adminInv = new InventoryGui(this, day + ". Rewards", Collections.nCopies(rows, String.join("", Collections.nCopies(9, "i"))).toArray(new String[0]));
+                        GuiElementGroup group = new GuiElementGroup('i');
+                        GuiElement.Action clickAction = adminClick -> {
+                            if (adminClick.getType() == ClickType.MIDDLE) {
+                                return false;
+                            } else if (adminClick.getType() != ClickType.LEFT) {
+                                return true;
+                            }
+                            ItemStack cursor = adminClick.getEvent().getCursor();
+                            List<ItemStack> currentRewards = (List<ItemStack>) dayRewards.get(day);
+                            if (cursor == null) {
+                                ((StaticGuiElement) adminClick.getElement()).setItem(null);
+                                currentRewards.remove(adminClick.getSlot());
+                            } else {
+                                ((StaticGuiElement) adminClick.getElement()).setItem(cursor);
+                                currentRewards.set(adminClick.getSlot(), cursor);
+                            }
+                            adminClick.getGui().draw();
+                            daysConfig.getConfig().set(day + ".rewards", currentRewards);
+                            daysConfig.saveConfig();
+                            return false;
+                        };
+                        for (ItemStack reward : rewards) {
+                            group.addElement(new StaticGuiElement('i', reward, clickAction));
+                        }
+                        group.setFiller(new StaticGuiElement('i', null, clickAction));
+                        adminInv.addElement(group);
+                        adminInv.show(click.getEvent().getWhoClicked());
+                        return true;
+                    };
+                    if (element.getAction() == null) {
+                        element.setAction(adminAction);
+                    } else {
+                        GuiElement.Action action = element.getAction();
+                        element.setAction(click -> {
+                            if (!action.onClick(click)) {
+                                return adminAction.onClick(click);
+                            }
+                            return true;
+                        });
+                    }
                 }
                 element.setNumber(day);
                 return element;
@@ -219,14 +291,12 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         playerConfig.getConfig().set("players." + player.getUniqueId(), retrievedDays.get(player.getUniqueId()));
         playerConfig.saveConfig();
 
-        List<Map<?, ?>> mapList = getConfig().getMapList("days." + day + ".reward");
-        for (Map<?, ?> map : mapList) {
-            ItemStack item = ItemStack.deserialize((Map<String, Object>) map);
-            if (item.getType() != null) {
-                for (ItemStack rest : player.getInventory().addItem(item).values()) {
-                    player.getLocation().getWorld().dropItem(player.getLocation(), rest);
-                }
+        if (dayRewards.containsKey(day)) {
+            for (ItemStack rest : player.getInventory().addItem(dayRewards.get(day).toArray(new ItemStack[0])).values()) {
+                player.getLocation().getWorld().dropItem(player.getLocation(), rest);
             }
+        } else {
+            player.sendMessage(ChatColor.RED + "No rewards defined for day " + day + "? :(");
         }
 
         player.sendMessage(getText("reward-received", "day", String.valueOf(day)));

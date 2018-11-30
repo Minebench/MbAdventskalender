@@ -9,3 +9,16 @@ commands:
       usage: /adventskalender
       aliases: [mbadventskalender, mbadvent, advent]
       permission: "mbadventskalender.command"
+permissions:
+  mbadventskalender.command:
+    description: Permission to open the GUI
+    default: op
+  mbadventskalender.command.reload:
+    description: Permission to reload the configs
+    default: false
+  mbadventskalender.command.others:
+    description: Permission to open GUI for other players (/advent show <name>)
+    default: false
+  mbadventskalender.admin:
+    description: Permission to administrate the setting via the GUI
+    default: false
