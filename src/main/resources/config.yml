@@ -113,6 +113,7 @@ gui:
           meta-type: SKULL
           internal: H4sIAAAAAAAAAE2PvW6DMBhFv1aqRFEfoyuSCQHK0CH9S4yCaRICmM0mpmDsNEogCnmuPmDp1uEOV+fc4ZoAJjxs2l6pz+N31ShhwC3ewaPzxIKKcd9iPODWlAtuBYxxy54y4Qbc83npm2COo4M4do043YPRiUvXH8XJBIAbA+5SpnoBP2IIUZHXaJeHqhywN/Zkg1SM5cHH+3Tgr9jDeuSLmbccgn+u27HMVdQJ62K/6rlO0dJZK7FY26XenklGByqJJhPSUrl1o2uLaPIi47dQFwl1/hLJLxTplUOSVBZJreJ52hbzD1Vk2KUylfT67kQTbJNkdhl5S5owqHL0PD6AX2ZylXgcAQAA
 text:
+  edit: "&cMittelklicke um Items zu editieren"
   reward-received: "&aGeschenk des %day%. Dezembers erhalten!"
   unavailable: "&cDu musst noch warten!"
   available: "&aKlicke um dieses Geschenk zu öffnen!"

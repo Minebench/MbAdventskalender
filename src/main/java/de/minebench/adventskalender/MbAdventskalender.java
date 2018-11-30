@@ -43,6 +43,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -239,6 +240,9 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                     });
                 }
                 if (target.hasPermission("mbadventskalender.admin")) {
+                    String[] text = Arrays.copyOf(element.getText(), element.getText().length + 1);
+                    text[text.length - 1] = getText("edit");
+                    element.setText(text);
                     GuiElement.Action adminAction = click -> {
                         if (click.getType() != ClickType.MIDDLE) {
                             return true;
