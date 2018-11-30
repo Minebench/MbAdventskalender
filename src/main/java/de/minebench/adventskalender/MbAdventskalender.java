@@ -280,10 +280,8 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                                     currentRewards.add(cursor);
                                 }
                             }
-                            if (e.getText().length == 0 || !e.getText()[0].equals("none")) {
+                            if (isEmpty(cursor)) {
                                 adminClick.getEvent().setCursor(current);
-                            } else {
-                                adminClick.getEvent().setCursor(null);
                             }
                             daysConfig.getConfig().set(day + ".reward", currentRewards);
                             daysConfig.saveConfig();
