@@ -15,10 +15,10 @@ permissions:
     default: op
   mbadventskalender.command.reload:
     description: Permission to reload the configs
-    default: false
+    default: op
   mbadventskalender.command.others:
     description: Permission to open GUI for other players (/advent show <name>)
-    default: false
+    default: op
   mbadventskalender.admin:
     description: Permission to administrate the setting via the GUI
-    default: false
+    default: ope

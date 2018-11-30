@@ -29,6 +29,7 @@ import de.themoep.minedown.MineDown;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -105,14 +106,15 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         daysConfig.saveDefaultConfig();
         daysConfig.reloadConfig();
 
+        dayRewards.clear();
         for (int day = 1; day <= 24; day++) {
-            List<Map<?, ?>> mapList = daysConfig.getConfig().getMapList(day + ".reward");
-            for (Map<?, ?> map : mapList) {
-                ItemStack item = ItemStack.deserialize((Map<String, Object>) map);
-                if (item != null && item.getType() != null) {
+            List<?> mapList = daysConfig.getConfig().getList(day + ".reward");
+            for (Object o : mapList) {
+                ItemStack item = o instanceof ItemStack ? (ItemStack) o : null;
+                if (item != null && !isEmpty(item)) {
                     dayRewards.put(day, item);
                 } else {
-                    getLogger().log(Level.WARNING, "An item for day " + day + " is invalid! (config: " + map + ")");
+                    getLogger().log(Level.WARNING, "An item for day " + day + " is invalid! (" + o + ")");
                 }
             }
         }
@@ -242,14 +244,14 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                             return true;
                         }
                         Collection<ItemStack> rewards = dayRewards.get(day);
-                        int rows = (rewards.size() + 1) / 9 + 1;
+                        int rows = Math.min(Math.max((rewards.size() + 1) / 9 + 1, 3), 6);
                         InventoryGui adminInv = new InventoryGui(this, day + ". Rewards", Collections.nCopies(rows, String.join("", Collections.nCopies(9, "i"))).toArray(new String[0]));
                         GuiElementGroup group = new GuiElementGroup('i');
                         GuiElement.Action clickAction = adminClick -> {
                             ItemStack cursor = adminClick.getEvent().getCursor();
                             ItemStack current = adminClick.getEvent().getCurrentItem() != null ? new ItemStack(adminClick.getEvent().getCurrentItem()) : null;
                             if (adminClick.getType() == ClickType.MIDDLE) {
-                                if (cursor == null && current != null) {
+                                if (isEmpty(cursor) && !isEmpty(current)) {
                                     current.setAmount(current.getMaxStackSize());
                                     getServer().getScheduler().runTask(this, () -> adminClick.getEvent().setCursor(current));
                                 }
@@ -258,27 +260,40 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                                 return true;
                             }
                             List<ItemStack> currentRewards = (List<ItemStack>) dayRewards.get(day);
-                            if (cursor == null) {
-                                ((StaticGuiElement) adminClick.getElement()).setItem(null);
-                                currentRewards.remove(adminClick.getSlot());
+                            StaticGuiElement e = ((StaticGuiElement) group.getElement(adminClick.getSlot()));
+                            if (isEmpty(cursor)) {
+                                if (e.getText().length == 0 || !e.getText()[0].equals("none")) {
+                                    e.setItem(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15));
+                                    e.setText("none");
+                                    currentRewards.remove(adminClick.getSlot());
+                                }
                             } else {
-                                ((StaticGuiElement) adminClick.getElement()).setItem(cursor);
+                                e.setItem(cursor);
+                                e.setText();
                                 if (currentRewards.size() > adminClick.getSlot()) {
                                     currentRewards.set(adminClick.getSlot(), cursor);
                                 } else {
                                     currentRewards.add(cursor);
                                 }
                             }
-                            getServer().getScheduler().runTask(this, () -> adminClick.getEvent().setCursor(current));
-                            adminClick.getGui().draw();
-                            daysConfig.getConfig().set(day + ".rewards", currentRewards);
+                            if (e.getText().length == 0 || !e.getText()[0].equals("none")) {
+                                getServer().getScheduler().runTask(this, () -> adminClick.getEvent().setCursor(current));
+                            } else {
+                                getServer().getScheduler().runTask(this, () -> adminClick.getEvent().setCursor(null));
+                            }
+                            daysConfig.getConfig().set(day + ".reward", currentRewards);
                             daysConfig.saveConfig();
+                            adminClick.getGui().draw();
                             return true;
                         };
+                        int slot = 0;
                         for (ItemStack reward : rewards) {
+                            slot++;
                             group.addElement(new StaticGuiElement('i', reward, clickAction));
                         }
-                        group.setFiller(new StaticGuiElement('i', null, clickAction));
+                        for (; slot < rows * 9; slot++) {
+                            group.addElement(new StaticGuiElement('n', new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15), clickAction, "none"));
+                        }
                         adminInv.addElement(group);
                         adminInv.show(click.getEvent().getWhoClicked());
                         return true;
@@ -300,6 +315,10 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
             }));
         }
         return elements.toArray(new GuiElement[0]);
+    }
+
+    private static boolean isEmpty(ItemStack itemStack) {
+        return itemStack == null || itemStack.getType() == null || itemStack.getType() == Material.AIR || itemStack.getAmount() <= 0;
     }
 
     private void giveRewards(HumanEntity player, int day) {
