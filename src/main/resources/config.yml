@@ -30,7 +30,7 @@ gui:
       missed: {}
 text:
   unavailable: "&cDu musst noch warten!"
-  available: "&aKlicke um dieses GEschenk zu öffnen!"
+  available: "&aKlicke um dieses Geschenk zu öffnen!"
   retrieved: "&7Schon geöffnet."
   missed: "&7Diesen Tag hast du leider verpasst :("
   day: "&b%day%. Dezember%title%"
@@ -40,6 +40,12 @@ text:
   christmas: |-
     &b24. Dezember
     &6Heiligabend
+  notification:
+    today: "&aDu hast noch nicht die heutige Tür deines Adventskalenders geöffnet! ([&e/adventskalender](/adventskalender)&a)"
+    before: "&aDu hast noch nicht die gestrige Tür deines Adventskalenders geöffnet! ([&e/adventskalender](/adventskalender)&a)"
+    today-and-before: "&aDu kannst zwei Türen in deinem Adventskalender öffnen! ([&e/adventskalender](/adventskalender)&a)"
+# Delay in seconds before sending notification messages after a player joins (-1 to disable notification)
+notification-delay: 5
 # How many days one can miss before a reward can no longer be claimed
 missed-days: 1
 days:

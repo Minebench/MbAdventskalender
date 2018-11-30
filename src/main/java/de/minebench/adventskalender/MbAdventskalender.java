@@ -25,12 +25,18 @@ import de.themoep.inventorygui.GuiElement;
 import de.themoep.inventorygui.GuiElementGroup;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
+import de.themoep.minedown.MineDown;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -44,7 +50,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public final class MbAdventskalender extends JavaPlugin {
+public final class MbAdventskalender extends JavaPlugin implements Listener {
     private ConfigAccessor playerConfig;
     private final Multimap<UUID, Integer> retrievedDays = MultimapBuilder.hashKeys().linkedHashSetValues(24).build();
 
@@ -53,6 +59,7 @@ public final class MbAdventskalender extends JavaPlugin {
     private Map<String, StaticGuiElement> elements = new HashMap<>();
     private List<Integer> dayOrder = new ArrayList<>();
     private int missedDays;
+    private int notificationDelay;
 
     @Override
     public void onEnable() {
@@ -64,12 +71,14 @@ public final class MbAdventskalender extends JavaPlugin {
         playerConfig = new ConfigAccessor(this, "players.yml");
         loadConfig();
         getCommand("adventskalender").setExecutor(this);
+        getServer().getPluginManager().registerEvents(this, this);
     }
 
     public void loadConfig() {
         saveDefaultConfig();
         reloadConfig();
         missedDays = getConfig().getInt("missed-days");
+        notificationDelay = getConfig().getInt("notification-delay");
         filler = getConfig().getItemStack("gui.filler");
 
         for (String key : elements.keySet()) {
@@ -103,7 +112,11 @@ public final class MbAdventskalender extends JavaPlugin {
     }
 
     private String getText(String key, String... replacements) {
-        return replaceIn(getConfig().getString("text." + key), replacements);
+        return TextComponent.toLegacyText(getComponents(key, replacements));
+    }
+
+    private BaseComponent[] getComponents(String key, String... replacements) {
+        return MineDown.parse(getConfig().getString("text." + key), replacements);
     }
 
     private String[] replaceIn(String[] text, String... replacements) {
@@ -182,7 +195,7 @@ public final class MbAdventskalender extends JavaPlugin {
                 };
                 if (currentDay < day) {
                     element = getElement(type + ".unavailable", replacements);
-                } else if (retrievedDays.containsEntry(target.getUniqueId(), day)) {
+                } else if (hasRetrieved(target, day)) {
                     element = getElement(type + ".retrieved", replacements);
                 } else if (currentDay - missedDays > day) {
                     element = getElement(type + ".missed", replacements);
@@ -220,8 +233,28 @@ public final class MbAdventskalender extends JavaPlugin {
         }
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Runnable run = () -> {
+            int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+            if (!hasRetrieved(event.getPlayer(), currentDay)) {
+                if (currentDay > 1 && !hasRetrieved(event.getPlayer(), currentDay - 1)) {
+                    event.getPlayer().sendMessage(getComponents("notification.today-and-before", "day", String.valueOf(currentDay)));
+                } else {
+                    event.getPlayer().sendMessage(getComponents("notification.today", "day", String.valueOf(currentDay)));
+                }
+            } else if (currentDay > 1 && !hasRetrieved(event.getPlayer(), currentDay - 1)) {
+                event.getPlayer().sendMessage(getComponents("notification.before", "day", String.valueOf(currentDay - 1)));
+            }
+        };
+        if (notificationDelay == 0) {
+            run.run();
+        } else if (notificationDelay > 0) {
+            getServer().getScheduler().runTaskLater(this, run, notificationDelay * 20);
+        }
+    }
+
+    private boolean hasRetrieved(Player player, int day) {
+        return retrievedDays.containsEntry(player.getUniqueId(), day);
     }
 }
