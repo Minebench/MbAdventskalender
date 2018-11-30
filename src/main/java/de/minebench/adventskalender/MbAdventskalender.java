@@ -45,7 +45,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public final class MbAdventskalender extends JavaPlugin {
-    private static final Calendar CALENDAR = Calendar.getInstance();
     private ConfigAccessor playerConfig;
     private final Multimap<UUID, Integer> retrievedDays = MultimapBuilder.hashKeys().linkedHashSetValues(24).build();
 
@@ -60,7 +59,7 @@ public final class MbAdventskalender extends JavaPlugin {
         for (int i = 1; i <= 24; i++) {
             dayOrder.add(i);
         }
-        Collections.shuffle(dayOrder, new Random(CALENDAR.get(Calendar.YEAR)));
+        Collections.shuffle(dayOrder, new Random(Calendar.getInstance().get(Calendar.YEAR)));
 
         playerConfig = new ConfigAccessor(this, "players.yml");
         loadConfig();
@@ -174,7 +173,7 @@ public final class MbAdventskalender extends JavaPlugin {
             String type = getConfig().getString("days." + day + ".type", defType);
             int finalAdvent = advent;
             elements.add(new DynamicGuiElement('d', () -> {
-                int currentDay = CALENDAR.get(Calendar.DAY_OF_MONTH);
+                int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
                 StaticGuiElement element;
                 String[] replacements = {
                         "day", String.valueOf(day),
