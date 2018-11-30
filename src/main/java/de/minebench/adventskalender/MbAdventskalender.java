@@ -203,6 +203,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                     element = getElement(type + ".available", replacements);
                     element.setAction(click -> {
                         giveRewards(click.getEvent().getWhoClicked(), day);
+                        click.getGui().draw();
                         return true;
                     });
                 }
@@ -228,6 +229,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
             }
         }
 
+        player.sendMessage(getText("reward-received", "day", String.valueOf(day)));
         if (player instanceof Player) {
             ((Player) player).playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
         }
