@@ -210,14 +210,16 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
             String type = getConfig().getString("days." + day + ".type", defType);
             int finalAdvent = advent;
             elements.add(new DynamicGuiElement('d', () -> {
-                int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+                Calendar calendar = Calendar.getInstance();
+                int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+                int currentMonth = calendar.get(Calendar.MONTH);
                 StaticGuiElement element;
                 String[] replacements = {
                         "day", String.valueOf(day),
                         "advent", String.valueOf(finalAdvent),
                         "title", getConfig().getString("days." + day + ".title", "")
                 };
-                if (currentDay < day) {
+                if (currentMonth < Calendar.DECEMBER || currentDay < day) {
                     element = getElement(type + ".unavailable", replacements);
                 } else if (hasRetrieved(target, day)) {
                     element = getElement(type + ".retrieved", replacements);
@@ -311,8 +313,12 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        Calendar calendar = Calendar.getInstance();
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        if (calendar.get(Calendar.MONTH) != Calendar.DECEMBER || currentDay > 24 + missedDays) {
+            return;
+        }
         Runnable run = () -> {
-            int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
             if (!hasRetrieved(event.getPlayer(), currentDay)) {
                 if (currentDay > 1 && !hasRetrieved(event.getPlayer(), currentDay - 1)) {
                     event.getPlayer().sendMessage(getComponents("notification.today-and-before", "day", String.valueOf(currentDay)));
