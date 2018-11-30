@@ -257,7 +257,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                             if (adminClick.getType() == ClickType.MIDDLE) {
                                 if (isEmpty(cursor) && !isEmpty(current)) {
                                     current.setAmount(current.getMaxStackSize());
-                                    getServer().getScheduler().runTask(this, () -> adminClick.getEvent().setCursor(current));
+                                    adminClick.getEvent().setCursor(current);
                                 }
                                 return true;
                             } else if (adminClick.getType() != ClickType.LEFT) {
@@ -281,9 +281,9 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                                 }
                             }
                             if (e.getText().length == 0 || !e.getText()[0].equals("none")) {
-                                getServer().getScheduler().runTask(this, () -> adminClick.getEvent().setCursor(current));
+                                adminClick.getEvent().setCursor(current);
                             } else {
-                                getServer().getScheduler().runTask(this, () -> adminClick.getEvent().setCursor(null));
+                                adminClick.getEvent().setCursor(null);
                             }
                             daysConfig.getConfig().set(day + ".reward", currentRewards);
                             daysConfig.saveConfig();
