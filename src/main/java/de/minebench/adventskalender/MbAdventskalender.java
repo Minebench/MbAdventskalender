@@ -320,7 +320,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
 
     private void giveRewards(HumanEntity player, int day) {
         retrievedDays.put(player.getUniqueId(), day);
-        playerConfig.getConfig().set("players." + player.getUniqueId(), retrievedDays.get(player.getUniqueId()));
+        playerConfig.getConfig().set("players." + player.getUniqueId(), new ArrayList<>(retrievedDays.get(player.getUniqueId())));
         playerConfig.saveConfig();
 
         if (dayRewards.containsKey(day)) {
