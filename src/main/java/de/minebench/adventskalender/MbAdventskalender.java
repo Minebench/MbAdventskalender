@@ -286,7 +286,8 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                             int finalSlot = slot;
                             group.addElement(new DynamicGuiElement('n', () -> {
                                 if (finalSlot < rewards.size()) {
-                                    return new StaticGuiElement('i', rewards.get(finalSlot), clickAction);
+                                    ItemStack reward = rewards.get(finalSlot);
+                                    return new StaticGuiElement('i', reward, reward.getAmount(), clickAction);
                                 }
                                 return new StaticGuiElement('n', new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15), clickAction, "none");
                             }));
