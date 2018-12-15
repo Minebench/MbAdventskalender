@@ -21,4 +21,4 @@ permissions:
     default: op
   mbadventskalender.admin:
     description: Permission to administrate the setting via the GUI
-    default: ope
+    default: op
