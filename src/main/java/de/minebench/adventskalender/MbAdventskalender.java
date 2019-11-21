@@ -187,12 +187,12 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         InventoryGui gui = new InventoryGui(this, getConfig().getString("gui.title"), getConfig().getStringList("gui.layout").toArray(new String[0]));
 
         gui.setFiller(filler);
-        gui.addElement(new GuiElementGroup('d', buildElements(target)));
+        gui.addElement(new GuiElementGroup('d', buildElements()));
         gui.show(target);
         return true;
     }
 
-    private GuiElement[] buildElements(Player target) {
+    private GuiElement[] buildElements() {
         List<GuiElement> elements = new ArrayList<>();
         for (int day : dayOrder) {
             String defType = "day";
@@ -211,7 +211,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
 
             String type = getConfig().getString("days." + day + ".type", defType);
             int finalAdvent = advent;
-            elements.add(new DynamicGuiElement('d', () -> {
+            elements.add(new DynamicGuiElement('d', (target) -> {
                 Calendar calendar = Calendar.getInstance();
                 int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
                 int currentMonth = calendar.get(Calendar.MONTH);
@@ -289,17 +289,17 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                                     ItemStack reward = rewards.get(finalSlot);
                                     return new StaticGuiElement('i', reward, reward.getAmount(), clickAction);
                                 }
-                                return new StaticGuiElement('n', new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15), clickAction, "none");
+                                return new StaticGuiElement('n', new ItemStack(Material.BLACK_STAINED_GLASS_PANE), clickAction, "none");
                             }));
                         }
                         adminInv.addElement(group);
                         adminInv.show(click.getEvent().getWhoClicked());
                         return true;
                     };
-                    if (element.getAction() == null) {
+                    if (element.getAction(target) == null) {
                         element.setAction(adminAction);
                     } else {
-                        GuiElement.Action action = element.getAction();
+                        GuiElement.Action action = element.getAction(target);
                         element.setAction(click -> {
                             if (!action.onClick(click)) {
                                 return adminAction.onClick(click);
@@ -363,7 +363,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         }
     }
 
-    private boolean hasRetrieved(Player player, int day) {
+    private boolean hasRetrieved(HumanEntity player, int day) {
         return retrievedDays.containsEntry(player.getUniqueId(), day);
     }
 }

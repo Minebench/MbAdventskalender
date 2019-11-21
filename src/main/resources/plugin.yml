@@ -1,5 +1,6 @@
 name: ${project.name}
 version: ${minecraft.plugin.version}
+api-version: 1.13
 main: de.minebench.adventskalender.MbAdventskalender
 authors: [Phoenix616]
 website: https://minebench.de
