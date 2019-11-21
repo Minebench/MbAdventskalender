@@ -59,6 +59,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
     private final Multimap<UUID, Integer> retrievedDays = MultimapBuilder.hashKeys().linkedHashSetValues(24).build();
     private final Multimap<Integer, ItemStack> dayRewards = MultimapBuilder.hashKeys().linkedListValues().build();
 
+    private InventoryGui gui;
     private ItemStack filler;
 
     private Map<String, StaticGuiElement> elements = new HashMap<>();
@@ -118,6 +119,11 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                 }
             }
         }
+
+        gui = new InventoryGui(this, getConfig().getString("gui.title"), getConfig().getStringList("gui.layout").toArray(new String[0]));
+
+        gui.setFiller(filler);
+        gui.addElement(new GuiElementGroup('d', buildElements()));
     }
 
     private StaticGuiElement buildElement(String key) {
@@ -184,10 +190,6 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
             }
         }
 
-        InventoryGui gui = new InventoryGui(this, getConfig().getString("gui.title"), getConfig().getStringList("gui.layout").toArray(new String[0]));
-
-        gui.setFiller(filler);
-        gui.addElement(new GuiElementGroup('d', buildElements()));
         gui.show(target);
         return true;
     }
