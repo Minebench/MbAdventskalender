@@ -115,9 +115,6 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         daysConfig.saveDefaultConfig();
         daysConfig.reloadConfig();
 
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        Replacer replacer = new Replacer().replace("year", String.valueOf(currentYear));
-
         dayRewards.clear();
 
         for (String day : daysConfig.getConfig().getKeys(false)) {
@@ -125,10 +122,6 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
             for (Object o : mapList) {
                 ItemStack item = o instanceof ItemStack ? (ItemStack) o : null;
                 if (item != null && !isEmpty(item)) {
-                    item.editMeta(meta -> {
-                        meta.displayName(replacer.replaceIn(meta.displayName()));
-                        meta.lore(replacer.replaceIn(meta.lore()));
-                    });
                     dayRewards.put(day, item);
                 } else {
                     getLogger().log(Level.WARNING, "An item for day " + day + " is invalid! (" + o + ")");
@@ -350,10 +343,9 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         playerConfig.getConfig().set("players." + player.getUniqueId(), new ArrayList<>(retrievedDays.get(player.getUniqueId())));
         playerConfig.saveConfig();
 
-        if (dayRewards.containsKey(day)) {
-            for (ItemStack rest : player.getInventory().addItem(dayRewards.get(String.valueOf(day)).toArray(new ItemStack[0])).values()) {
-                player.getLocation().getWorld().dropItem(player.getLocation(), rest);
-            }
+        List<ItemStack> rewards = new ArrayList<>();
+        if (dayRewards.containsKey(String.valueOf(day))) {
+            rewards.addAll(dayRewards.get(String.valueOf(day)));
         } else {
             player.sendMessage(ChatColor.RED + "No rewards defined for day " + day + "? :(");
         }
@@ -370,11 +362,25 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         if (advent > 0) {
             String key = "advent-" + advent;
             if (dayRewards.containsKey(key)) {
-                for (ItemStack rest : player.getInventory().addItem(dayRewards.get(key).toArray(new ItemStack[0])).values()) {
-                    player.getLocation().getWorld().dropItem(player.getLocation(), rest);
-                }
+                rewards.addAll(dayRewards.get(key));
             }
         }
+
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        Replacer replacer = new Replacer().replace("year", String.valueOf(currentYear));
+        rewards.stream().map(item -> {
+            ItemStack clone = item.clone();
+
+            clone.editMeta(meta -> {
+                meta.displayName(replacer.replaceIn(meta.displayName()));
+                meta.lore(replacer.replaceIn(meta.lore()));
+            });
+            return clone;
+        }).map(item -> player.getInventory().addItem(item)).forEach(rest -> {
+            if (!rest.isEmpty()) {
+                rest.values().forEach(v -> player.getWorld().dropItem(player.getLocation(), v).setOwner(player.getUniqueId()));
+            }
+        });
 
         player.sendMessage(getComponents("reward-received", "day", String.valueOf(day)));
         if (player instanceof Player) {
