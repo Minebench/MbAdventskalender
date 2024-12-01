@@ -174,7 +174,7 @@ gui:
               - name: textures
                 value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY4M2JlN2E0ZWM3OGU4YTI5YWQwNWE2NWEwYmQ4NTY3N2IzZTJmMjQzZjc5NWJkYjBlMjJmYTEyOTIwMDM3YyJ9fX0=
 text:
-  edit: "&cMittelklicke um Items zu editieren"
+  edit: "&cRechtsklick um Items zu editieren"
   reward-received: "&aGeschenk des %day%. Dezembers erhalten!"
   unavailable: "&cDu musst noch warten!"
   available: "&aKlicke um dieses Geschenk zu öffnen!"

@@ -23,6 +23,7 @@ import com.google.common.collect.MultimapBuilder;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.GuiElement;
 import de.themoep.inventorygui.GuiElementGroup;
+import de.themoep.inventorygui.GuiStorageElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
 import de.themoep.minedown.adventure.MineDown;
@@ -30,7 +31,6 @@ import de.themoep.minedown.adventure.Replacer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -40,8 +40,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -242,7 +242,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                 } else {
                     element = getElement(type + ".available", replacements);
                     element.setAction(click -> {
-                        if (click.getType() == ClickType.MIDDLE) {
+                        if (click.getType() == ClickType.MIDDLE || click.getType() == ClickType.RIGHT) {
                             return true;
                         }
                         giveRewards(click.getRawEvent().getWhoClicked(), day);
@@ -255,58 +255,20 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                     text[text.length - 1] = getRawText("edit");
                     element.setText(text);
                     GuiElement.Action adminAction = click -> {
-                        if (click.getType() != ClickType.MIDDLE) {
+                        if (click.getType() != ClickType.MIDDLE || click.getType() != ClickType.RIGHT) {
                             return true;
                         }
                         List<ItemStack> rewards = (List<ItemStack>) dayRewards.get(String.valueOf(day));
                         int rows = Math.min(Math.max((rewards.size() + 1) / 9 + 1, 3), 6);
                         InventoryGui adminInv = new InventoryGui(this, day + ". Rewards", Collections.nCopies(rows, String.join("", Collections.nCopies(9, "i"))).toArray(new String[0]));
-                        GuiElementGroup group = new GuiElementGroup('i');
-                        GuiElement.Action clickAction = adminClick -> {
-                            if (click.getRawEvent() instanceof InventoryClickEvent adminClickEvent) {
-                                ItemStack cursor = adminClick.getCursor() != null ? new ItemStack(adminClick.getCursor()) : null;
-                                ItemStack current = adminClickEvent.getCurrentItem() != null ? new ItemStack(adminClickEvent.getCurrentItem()) : null;
-                                if (adminClick.getType() == ClickType.MIDDLE) {
-                                    if (isEmpty(cursor) && !isEmpty(current)) {
-                                        current.setAmount(current.getMaxStackSize());
-                                        adminClick.setCursor(current);
-                                    }
-                                    return true;
-                                } else if (adminClick.getType() != ClickType.LEFT) {
-                                    return true;
-                                }
-                                List<ItemStack> currentRewards = (List<ItemStack>) dayRewards.get(String.valueOf(day));
-                                if (isEmpty(cursor)) {
-                                    if (adminClick.getSlot() < currentRewards.size()) {
-                                        currentRewards.remove(adminClick.getSlot());
-                                    }
-                                } else {
-                                    if (currentRewards.size() > adminClick.getSlot()) {
-                                        currentRewards.set(adminClick.getSlot(), cursor);
-                                    } else {
-                                        currentRewards.add(cursor);
-                                    }
-                                }
-                                if (isEmpty(cursor)) {
-                                    adminClick.setCursor(current);
-                                }
-                                daysConfig.getConfig().set(day + ".reward", currentRewards);
-                                daysConfig.saveConfig();
-                                adminClick.getGui().draw();
-                            }
-                            return true;
-                        };
-                        for (int slot = 0; slot < rows * 9; slot++) {
-                            int finalSlot = slot;
-                            group.addElement(new DynamicGuiElement('n', () -> {
-                                if (finalSlot < rewards.size()) {
-                                    ItemStack reward = rewards.get(finalSlot);
-                                    return new StaticGuiElement('i', reward, reward.getAmount(), clickAction);
-                                }
-                                return new StaticGuiElement('n', new ItemStack(Material.BLACK_STAINED_GLASS_PANE), clickAction, "none");
-                            }));
-                        }
-                        adminInv.addElement(group);
+                        Inventory dayEditInventory = getServer().createInventory(null, rows * 9);
+                        GuiStorageElement dayStorageElement = new GuiStorageElement('i', dayEditInventory);
+                        dayStorageElement.setApplyStorage(() -> {
+                            daysConfig.getConfig().set(day + ".reward", Arrays.stream(dayEditInventory.getContents())
+                                    .filter(item -> item != null && !isEmpty(item)).toList());
+                            daysConfig.saveConfig();
+                        });
+                        adminInv.addElement(dayStorageElement);
                         adminInv.show(click.getRawEvent().getWhoClicked());
                         return true;
                     };
