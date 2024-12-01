@@ -32,6 +32,7 @@ gui:
         type: PLAYER_HEAD
         meta:
           ==: ItemMeta
+          meta-type: SKULL
           skull-owner:
             ==: PlayerProfile
             uniqueId: 889e9229-52c8-4bd6-a517-695c0a410726
