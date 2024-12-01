@@ -10,108 +10,167 @@ gui:
   # insert items
   filler:
     ==: org.bukkit.inventory.ItemStack
-    type: LEAVES
-    damage: 1
+    type: SPRUCE_LEAVES
   icons:
     day:
       unavailable:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2PwW6CQBRFX5s0saSf0S3JCA7Kogsjpg7RoaCAw47BQRgGaxQs8F39wLLs8uacs7gagAZv+6pV6uv2nZdKTOCZnOCdc5zPpguk2wue6zM7s/TUwIbOZ7YtsMXnuWFpoI3RVdyaUtxfYdKIrmlv4q4BwNMEXqJUtQJ+Re+i5Fig09FVWU+scR/2SHlEXufkEvV8RSxSj3yztLa9/c/FTRpjxUy3SC5+y+sIbc1AiU0wzerwkchsYPJsUqlK6rAuOZwNGtPSc6Jq9xn+0Hg9UKeQbPC7XR1JOiw7JouaGWvsxUFFYx9RGUgvDntqMMykj3Yr186P6GN8AH8rN78yHAEAAA==
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: 889e9229-52c8-4bd6-a517-695c0a410726
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmIxZWM3ZGM3NTMwNjFjYTE3NDQyNGVhNDVjZjk0OTBiMzljZDVkY2NhNDc3ZDEzOGE2MDNlNmJlNzU1ZWM3MiJ9fX0=
       available:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
-          meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2PwW6CQBRFX5s0saSf0S3JCA7Kogsjpg7RoaCAw47BQRgGaxQs8F39wLLs8uacs7gagAZv+6pV6uv2nZdKTOCZnOCdc5zPpguk2wue6zM7s/TUwIbOZ7YtsMXnuWFpoI3RVdyaUtxfYdKIrmlv4q4BwNMEXqJUtQJ+Re+i5Fig09FVWU+scR/2SHlEXufkEvV8RSxSj3yztLa9/c/FTRpjxUy3SC5+y+sIbc1AiU0wzerwkchsYPJsUqlK6rAuOZwNGtPSc6Jq9xn+0Hg9UKeQbPC7XR1JOiw7JouaGWvsxUFFYx9RGUgvDntqMMykj3Yr186P6GN8AH8rN78yHAEAAA==
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: 889e9229-52c8-4bd6-a517-695c0a410726
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmIxZWM3ZGM3NTMwNjFjYTE3NDQyNGVhNDVjZjk0OTBiMzljZDVkY2NhNDc3ZDEzOGE2MDNlNmJlNzU1ZWM3MiJ9fX0=
       retrieved:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2PQW+CMBiGvy1Z4sh+xq4kRSjCYQcznZZI2bQK7U1KndbWGQUD/q79wHHc8c3zPIfXAXDgZXVsjPm8/OwORg3gkVTwOpL+SEaxcmWoSjfAgXSjyI9d5OOo9NSwiivPAaePzupSH9T1GQa1auvmoq4OADwM4GmzNY2CX9UlSBR7VBWJkR0J+81WyGREn0fktOnKdxIS2/P5OFx08T8X19scG+4ne3H6akq7QQt/adR86Um7vnFGOs4+NNW8o1qidDZtU3ZsxWTspXqMaT4NBBN7kROPWo6zGblnE3FMrbCCfQd0SG3G0ju16yHXU8zvRvNDEu8K9NY/gD+IatwxHAEAAA==
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: fb40def4-a3f0-413f-8cd0-96a8ea658343
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2FhMDNmODE3MzQxY2FhNTZmYmZjNmQzZjI4MTFhZGI5ODliNjExNzgxMTYyYzEyYWY0YzU4YWYxOGM1M2M3MiJ9fX0=
       missed:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2PvW6DMBhFv1aqRFEfoyuSCQHK0CH9S4yCaRICmM0mpmDsNEogCnmuPmDp1uEOV+fc4ZoAJjxs2l6pz+N31ShhwC3ewaPzxIKKcd9iPODWlAtuBYxxy54y4Qbc83npm2COo4M4do043YPRiUvXH8XJBIAbA+5SpnoBP2IIUZHXaJeHqhywN/Zkg1SM5cHH+3Tgr9jDeuSLmbccgn+u27HMVdQJ62K/6rlO0dJZK7FY26XenklGByqJJhPSUrl1o2uLaPIi47dQFwl1/hLJLxTplUOSVBZJreJ52hbzD1Vk2KUylfT67kQTbJNkdhl5S5owqHL0PD6AX2ZylXgcAQAA
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: 97ff93d9-6d89-4e09-9570-84b91b966871
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY4M2JlN2E0ZWM3OGU4YTI5YWQwNWE2NWEwYmQ4NTY3N2IzZTJmMjQzZjc5NWJkYjBlMjJmYTEyOTIwMDM3YyJ9fX0=
+
     advent:
       unavailable:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2PwW6CQBRFX5s0saSf0S3JCA7Kogsjpg7RoaCAw47BQRgGaxQs8F39wLLs8uacs7gagAZv+6pV6uv2nZdKTOCZnOCdc5zPpguk2wue6zM7s/TUwIbOZ7YtsMXnuWFpoI3RVdyaUtxfYdKIrmlv4q4BwNMEXqJUtQJ+Re+i5Fig09FVWU+scR/2SHlEXufkEvV8RSxSj3yztLa9/c/FTRpjxUy3SC5+y+sIbc1AiU0wzerwkchsYPJsUqlK6rAuOZwNGtPSc6Jq9xn+0Hg9UKeQbPC7XR1JOiw7JouaGWvsxUFFYx9RGUgvDntqMMykj3Yr186P6GN8AH8rN78yHAEAAA==
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: 889e9229-52c8-4bd6-a517-695c0a410726
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmIxZWM3ZGM3NTMwNjFjYTE3NDQyNGVhNDVjZjk0OTBiMzljZDVkY2NhNDc3ZDEzOGE2MDNlNmJlNzU1ZWM3MiJ9fX0=
       available:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2PwW6CQBRFX5s0saSf0S3JCA7Kogsjpg7RoaCAw47BQRgGaxQs8F39wLLs8uacs7gagAZv+6pV6uv2nZdKTOCZnOCdc5zPpguk2wue6zM7s/TUwIbOZ7YtsMXnuWFpoI3RVdyaUtxfYdKIrmlv4q4BwNMEXqJUtQJ+Re+i5Fig09FVWU+scR/2SHlEXufkEvV8RSxSj3yztLa9/c/FTRpjxUy3SC5+y+sIbc1AiU0wzerwkchsYPJsUqlK6rAuOZwNGtPSc6Jq9xn+0Hg9UKeQbPC7XR1JOiw7JouaGWvsxUFFYx9RGUgvDntqMMykj3Yr186P6GN8AH8rN78yHAEAAA==
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: 889e9229-52c8-4bd6-a517-695c0a410726
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmIxZWM3ZGM3NTMwNjFjYTE3NDQyNGVhNDVjZjk0OTBiMzljZDVkY2NhNDc3ZDEzOGE2MDNlNmJlNzU1ZWM3MiJ9fX0=
       retrieved:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2PQW+CMBiGvy1Z4sh+xq4kRSjCYQcznZZI2bQK7U1KndbWGQUD/q79wHHc8c3zPIfXAXDgZXVsjPm8/OwORg3gkVTwOpL+SEaxcmWoSjfAgXSjyI9d5OOo9NSwiivPAaePzupSH9T1GQa1auvmoq4OADwM4GmzNY2CX9UlSBR7VBWJkR0J+81WyGREn0fktOnKdxIS2/P5OFx08T8X19scG+4ne3H6akq7QQt/adR86Um7vnFGOs4+NNW8o1qidDZtU3ZsxWTspXqMaT4NBBN7kROPWo6zGblnE3FMrbCCfQd0SG3G0ju16yHXU8zvRvNDEu8K9NY/gD+IatwxHAEAAA==
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: fb40def4-a3f0-413f-8cd0-96a8ea658343
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2FhMDNmODE3MzQxY2FhNTZmYmZjNmQzZjI4MTFhZGI5ODliNjExNzgxMTYyYzEyYWY0YzU4YWYxOGM1M2M3MiJ9fX0=
       missed:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2PvW6DMBhFv1aqRFEfoyuSCQHK0CH9S4yCaRICmM0mpmDsNEogCnmuPmDp1uEOV+fc4ZoAJjxs2l6pz+N31ShhwC3ewaPzxIKKcd9iPODWlAtuBYxxy54y4Qbc83npm2COo4M4do043YPRiUvXH8XJBIAbA+5SpnoBP2IIUZHXaJeHqhywN/Zkg1SM5cHH+3Tgr9jDeuSLmbccgn+u27HMVdQJ62K/6rlO0dJZK7FY26XenklGByqJJhPSUrl1o2uLaPIi47dQFwl1/hLJLxTplUOSVBZJreJ52hbzD1Vk2KUylfT67kQTbJNkdhl5S5owqHL0PD6AX2ZylXgcAQAA
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: 97ff93d9-6d89-4e09-9570-84b91b966871
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY4M2JlN2E0ZWM3OGU4YTI5YWQwNWE2NWEwYmQ4NTY3N2IzZTJmMjQzZjc5NWJkYjBlMjJmYTEyOTIwMDM3YyJ9fX0=
     christmas:
       unavailable:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2OwW6CQBiE/zZpQkkfo1eSlWWhHnowVesSFwsqZbmxsgRwsUbBuPtUfcRy7GEOM99MMjaADS/b46DU1+WnapS04JGW8EpQVXiiwk5ZSex4AcKOQCV2girARAgigreJDfY4OstL38jrM1i9vPfDRV5tAHiw4Ckt1CDhV+oQ5VmNyixUB0390e+2SG1oew7oKdXig/q0G/lq5q/19F+X9MU3URyHdX6KB9GlaI0TJVfJ5NDtb/k8rLlZttFu4bF5qVjL79wsNDdJx7rlkY9iJm82n3TMYhK5TEem7CJDNXPTlrUx4i5FUTvzuNkTrsNplaH38T38AY7/bOUYAQAA
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: af2104d6-98cd-4baf-887f-bcaed23e320f
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjFiYzlkNDJiMDA0MWU4Zjk1Y2I5YjI2NjI4ZmRhZjUwY2QwZTM2ZjdiYjlkNmIzYTRkMmFmMzk0OWRhOTdkNiJ9fX0=
       available:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal:  H4sIAAAAAAAAAE2OwW6CQBiE/zZpQkkfo1eSlWWhHnowVesSFwsqZbmxsgRwsUbBuPtUfcRy7GEOM99MMjaADS/b46DU1+WnapS04JGW8EpQVXiiwk5ZSex4AcKOQCV2girARAgigreJDfY4OstL38jrM1i9vPfDRV5tAHiw4Ckt1CDhV+oQ5VmNyixUB0390e+2SG1oew7oKdXig/q0G/lq5q/19F+X9MU3URyHdX6KB9GlaI0TJVfJ5NDtb/k8rLlZttFu4bF5qVjL79wsNDdJx7rlkY9iJm82n3TMYhK5TEem7CJDNXPTlrUx4i5FUTvzuNkTrsNplaH38T38AY7/bOUYAQAA
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: af2104d6-98cd-4baf-887f-bcaed23e320f
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjFiYzlkNDJiMDA0MWU4Zjk1Y2I5YjI2NjI4ZmRhZjUwY2QwZTM2ZjdiYjlkNmIzYTRkMmFmMzk0OWRhOTdkNiJ9fX0=
       retrieved:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2PQW+CMBiGvy1Z4sh+xq4kRSjCYQcznZZI2bQK7U1KndbWGQUD/q79wHHc8c3zPIfXAXDgZXVsjPm8/OwORg3gkVTwOpL+SEaxcmWoSjfAgXSjyI9d5OOo9NSwiivPAaePzupSH9T1GQa1auvmoq4OADwM4GmzNY2CX9UlSBR7VBWJkR0J+81WyGREn0fktOnKdxIS2/P5OFx08T8X19scG+4ne3H6akq7QQt/adR86Um7vnFGOs4+NNW8o1qidDZtU3ZsxWTspXqMaT4NBBN7kROPWo6zGblnE3FMrbCCfQd0SG3G0ju16yHXU8zvRvNDEu8K9NY/gD+IatwxHAEAAA==
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: 6e3cf8db-f8d0-4745-a7c9-5a52e5a1dd58
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1ZDEzY2ExNGJjYmJkMWNkZTIxYWEwNjYwMDEwMWU0NTZkMzE4YWFkZjE3OGIyNzkzNjc4YjQ5NGY2ZGNlOCJ9fX0=
       missed:
         ==: org.bukkit.inventory.ItemStack
-        type: SKULL_ITEM
-        damage: 3
+        v: 3955
+        type: PLAYER_HEAD
         meta:
           ==: ItemMeta
           meta-type: SKULL
-          internal: H4sIAAAAAAAAAE2PvW6DMBhFv1aqRFEfoyuSCQHK0CH9S4yCaRICmM0mpmDsNEogCnmuPmDp1uEOV+fc4ZoAJjxs2l6pz+N31ShhwC3ewaPzxIKKcd9iPODWlAtuBYxxy54y4Qbc83npm2COo4M4do043YPRiUvXH8XJBIAbA+5SpnoBP2IIUZHXaJeHqhywN/Zkg1SM5cHH+3Tgr9jDeuSLmbccgn+u27HMVdQJ62K/6rlO0dJZK7FY26XenklGByqJJhPSUrl1o2uLaPIi47dQFwl1/hLJLxTplUOSVBZJreJ52hbzD1Vk2KUylfT67kQTbJNkdhl5S5owqHL0PD6AX2ZylXgcAQAA
+          skull-owner:
+            ==: PlayerProfile
+            uniqueId: 97ff93d9-6d89-4e09-9570-84b91b966871
+            properties:
+              - name: textures
+                value: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY4M2JlN2E0ZWM3OGU4YTI5YWQwNWE2NWEwYmQ4NTY3N2IzZTJmMjQzZjc5NWJkYjBlMjJmYTEyOTIwMDM3YyJ9fX0=
 text:
   edit: "&cMittelklicke um Items zu editieren"
   reward-received: "&aGeschenk des %day%. Dezembers erhalten!"

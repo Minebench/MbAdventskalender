@@ -25,19 +25,21 @@ import de.themoep.inventorygui.GuiElement;
 import de.themoep.inventorygui.GuiElementGroup;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
-import de.themoep.minedown.MineDown;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+import de.themoep.minedown.adventure.MineDown;
+import de.themoep.minedown.adventure.Replacer;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -59,6 +61,8 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
     private final Multimap<UUID, Integer> retrievedDays = MultimapBuilder.hashKeys().linkedHashSetValues(24).build();
     private final Multimap<Integer, ItemStack> dayRewards = MultimapBuilder.hashKeys().linkedListValues().build();
 
+    private PluginCommand command;
+
     private InventoryGui gui;
     private ItemStack filler;
 
@@ -77,7 +81,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         playerConfig = new ConfigAccessor(this, "players.yml");
         daysConfig = new ConfigAccessor(this, "days.yml");
         loadConfig();
-        getCommand("adventskalender").setExecutor(this);
+        (command = getCommand("adventskalender")).setExecutor(this);
         getServer().getPluginManager().registerEvents(this, this);
     }
 
@@ -87,6 +91,9 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         missedDays = getConfig().getInt("missed-days");
         notificationDelay = getConfig().getInt("notification-delay");
         filler = getConfig().getItemStack("gui.filler");
+        if (filler != null) {
+            filler.editMeta(meta -> meta.setHideTooltip(true));
+        }
 
         for (String key : elements.keySet()) {
             elements.put(key, buildElement(key));
@@ -107,12 +114,19 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         daysConfig.saveDefaultConfig();
         daysConfig.reloadConfig();
 
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        Replacer replacer = new Replacer().replace("year", String.valueOf(currentYear));
+
         dayRewards.clear();
         for (int day = 1; day <= 24; day++) {
             List<?> mapList = daysConfig.getConfig().getList(day + ".reward");
             for (Object o : mapList) {
                 ItemStack item = o instanceof ItemStack ? (ItemStack) o : null;
                 if (item != null && !isEmpty(item)) {
+                    item.editMeta(meta -> {
+                        meta.displayName(replacer.replaceIn(meta.displayName()));
+                        meta.lore(replacer.replaceIn(meta.lore()));
+                    });
                     dayRewards.put(day, item);
                 } else {
                     getLogger().log(Level.WARNING, "An item for day " + day + " is invalid! (" + o + ")");
@@ -122,6 +136,9 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
 
         gui = new InventoryGui(this, getConfig().getString("gui.title"), getConfig().getStringList("gui.layout").toArray(new String[0]));
 
+        gui.setItemNameSetter((meta, string) -> meta.displayName(MineDown.parse(string)));
+        gui.setItemLoreSetter((meta, stringList) -> meta.lore(stringList.stream().map(MineDown::parse).toList()));
+
         gui.setFiller(filler);
         gui.addElement(new GuiElementGroup('d', buildElements()));
     }
@@ -130,7 +147,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         String[] parts = key.split("\\.");
         return new StaticGuiElement('d',
                 getConfig().getItemStack("gui.icons." + key),
-                getText(parts[0]) + (parts.length > 1 ? "\n" + getText(parts[1]) : "")
+                getRawText(parts[0]) + (parts.length > 1 ? "\n" + getRawText(parts[1]) : "")
         );
     }
 
@@ -139,12 +156,12 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         return new StaticGuiElement(element.getSlotChar(), element.getRawItem(), replaceIn(element.getText(), replacements));
     }
 
-    private String getText(String key, String... replacements) {
-        return TextComponent.toLegacyText(getComponents(key, replacements));
+    private String getRawText(String key) {
+        return getConfig().getString("text." + key);
     }
 
-    private BaseComponent[] getComponents(String key, String... replacements) {
-        return MineDown.parse(getConfig().getString("text." + key), replacements);
+    private Component getComponents(String key, String... replacements) {
+        return MineDown.parse(getRawText(key), replacements);
     }
 
     private String[] replaceIn(String[] text, String... replacements) {
@@ -217,9 +234,11 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                 Calendar calendar = Calendar.getInstance();
                 int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
                 int currentMonth = calendar.get(Calendar.MONTH);
+                int currentYear = calendar.get(Calendar.YEAR);
                 StaticGuiElement element;
                 String[] replacements = {
                         "day", String.valueOf(day),
+                        "year", String.valueOf(currentYear),
                         "advent", String.valueOf(finalAdvent),
                         "title", getConfig().getString("days." + day + ".title", "")
                 };
@@ -235,14 +254,14 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                         if (click.getType() == ClickType.MIDDLE) {
                             return true;
                         }
-                        giveRewards(click.getEvent().getWhoClicked(), day);
+                        giveRewards(click.getRawEvent().getWhoClicked(), day);
                         click.getGui().draw();
                         return true;
                     });
                 }
                 if (target.hasPermission("mbadventskalender.admin")) {
                     String[] text = Arrays.copyOf(element.getText(), element.getText().length + 1);
-                    text[text.length - 1] = getText("edit");
+                    text[text.length - 1] = getRawText("edit");
                     element.setText(text);
                     GuiElement.Action adminAction = click -> {
                         if (click.getType() != ClickType.MIDDLE) {
@@ -253,35 +272,37 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                         InventoryGui adminInv = new InventoryGui(this, day + ". Rewards", Collections.nCopies(rows, String.join("", Collections.nCopies(9, "i"))).toArray(new String[0]));
                         GuiElementGroup group = new GuiElementGroup('i');
                         GuiElement.Action clickAction = adminClick -> {
-                            ItemStack cursor = adminClick.getEvent().getCursor() != null ? new ItemStack(adminClick.getEvent().getCursor()) : null;
-                            ItemStack current = adminClick.getEvent().getCurrentItem() != null ? new ItemStack(adminClick.getEvent().getCurrentItem()) : null;
-                            if (adminClick.getType() == ClickType.MIDDLE) {
-                                if (isEmpty(cursor) && !isEmpty(current)) {
-                                    current.setAmount(current.getMaxStackSize());
-                                    adminClick.getEvent().setCursor(current);
+                            if (click.getRawEvent() instanceof InventoryClickEvent adminClickEvent) {
+                                ItemStack cursor = adminClickEvent.getCursor() != null ? new ItemStack(adminClickEvent.getCursor()) : null;
+                                ItemStack current = adminClickEvent.getCurrentItem() != null ? new ItemStack(adminClickEvent.getCurrentItem()) : null;
+                                if (adminClick.getType() == ClickType.MIDDLE) {
+                                    if (isEmpty(cursor) && !isEmpty(current)) {
+                                        current.setAmount(current.getMaxStackSize());
+                                        adminClickEvent.setCursor(current);
+                                    }
+                                    return true;
+                                } else if (adminClick.getType() != ClickType.LEFT) {
+                                    return true;
                                 }
-                                return true;
-                            } else if (adminClick.getType() != ClickType.LEFT) {
-                                return true;
-                            }
-                            List<ItemStack> currentRewards = (List<ItemStack>) dayRewards.get(day);
-                            if (isEmpty(cursor)) {
-                                if (adminClick.getSlot() < currentRewards.size()) {
-                                    currentRewards.remove(adminClick.getSlot());
-                                }
-                            } else {
-                                if (currentRewards.size() > adminClick.getSlot()) {
-                                    currentRewards.set(adminClick.getSlot(), cursor);
+                                List<ItemStack> currentRewards = (List<ItemStack>) dayRewards.get(day);
+                                if (isEmpty(cursor)) {
+                                    if (adminClick.getSlot() < currentRewards.size()) {
+                                        currentRewards.remove(adminClick.getSlot());
+                                    }
                                 } else {
-                                    currentRewards.add(cursor);
+                                    if (currentRewards.size() > adminClick.getSlot()) {
+                                        currentRewards.set(adminClick.getSlot(), cursor);
+                                    } else {
+                                        currentRewards.add(cursor);
+                                    }
                                 }
+                                if (isEmpty(cursor)) {
+                                    adminClickEvent.setCursor(current);
+                                }
+                                daysConfig.getConfig().set(day + ".reward", currentRewards);
+                                daysConfig.saveConfig();
+                                adminClick.getGui().draw();
                             }
-                            if (isEmpty(cursor)) {
-                                adminClick.getEvent().setCursor(current);
-                            }
-                            daysConfig.getConfig().set(day + ".reward", currentRewards);
-                            daysConfig.saveConfig();
-                            adminClick.getGui().draw();
                             return true;
                         };
                         for (int slot = 0; slot < rows * 9; slot++) {
@@ -295,19 +316,14 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                             }));
                         }
                         adminInv.addElement(group);
-                        adminInv.show(click.getEvent().getWhoClicked());
+                        adminInv.show(click.getRawEvent().getWhoClicked());
                         return true;
                     };
                     if (element.getAction(target) == null) {
                         element.setAction(adminAction);
                     } else {
                         GuiElement.Action action = element.getAction(target);
-                        element.setAction(click -> {
-                            if (!action.onClick(click)) {
-                                return adminAction.onClick(click);
-                            }
-                            return true;
-                        });
+                        element.setAction(click -> action.onClick(click) && adminAction.onClick(click));
                     }
                 }
                 element.setNumber(day);
@@ -318,7 +334,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
     }
 
     private static boolean isEmpty(ItemStack itemStack) {
-        return itemStack == null || itemStack.getType() == null || itemStack.getType() == Material.AIR || itemStack.getAmount() <= 0;
+        return itemStack == null || itemStack.getType() == null || itemStack.isEmpty();
     }
 
     private void giveRewards(HumanEntity player, int day) {
@@ -334,7 +350,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
             player.sendMessage(ChatColor.RED + "No rewards defined for day " + day + "? :(");
         }
 
-        player.sendMessage(getText("reward-received", "day", String.valueOf(day)));
+        player.sendMessage(getComponents("reward-received", "day", String.valueOf(day)));
         if (player instanceof Player) {
             ((Player) player).playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
         }
@@ -342,6 +358,9 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        if (!command.testPermissionSilent(event.getPlayer())) {
+            return;
+        }
         Calendar calendar = Calendar.getInstance();
         int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
         if (calendar.get(Calendar.MONTH) != Calendar.DECEMBER || currentDay > 24 + missedDays) {
@@ -361,7 +380,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         if (notificationDelay == 0) {
             run.run();
         } else if (notificationDelay > 0) {
-            getServer().getScheduler().runTaskLater(this, run, notificationDelay * 20);
+            getServer().getScheduler().runTaskLater(this, run, notificationDelay * 20L);
         }
     }
 
