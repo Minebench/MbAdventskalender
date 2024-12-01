@@ -255,7 +255,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                     text[text.length - 1] = getRawText("edit");
                     element.setText(text);
                     GuiElement.Action adminAction = click -> {
-                        if (click.getType() != ClickType.MIDDLE || click.getType() != ClickType.RIGHT) {
+                        if (click.getType() != ClickType.MIDDLE && click.getType() != ClickType.RIGHT) {
                             return true;
                         }
                         List<ItemStack> rewards = (List<ItemStack>) dayRewards.get(String.valueOf(day));
