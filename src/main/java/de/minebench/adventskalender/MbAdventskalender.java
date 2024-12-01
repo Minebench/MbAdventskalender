@@ -264,12 +264,12 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                         GuiElementGroup group = new GuiElementGroup('i');
                         GuiElement.Action clickAction = adminClick -> {
                             if (click.getRawEvent() instanceof InventoryClickEvent adminClickEvent) {
-                                ItemStack cursor = adminClickEvent.getCursor() != null ? new ItemStack(adminClickEvent.getCursor()) : null;
+                                ItemStack cursor = adminClick.getCursor() != null ? new ItemStack(adminClick.getCursor()) : null;
                                 ItemStack current = adminClickEvent.getCurrentItem() != null ? new ItemStack(adminClickEvent.getCurrentItem()) : null;
                                 if (adminClick.getType() == ClickType.MIDDLE) {
                                     if (isEmpty(cursor) && !isEmpty(current)) {
                                         current.setAmount(current.getMaxStackSize());
-                                        adminClickEvent.setCursor(current);
+                                        adminClick.setCursor(current);
                                     }
                                     return true;
                                 } else if (adminClick.getType() != ClickType.LEFT) {
@@ -288,7 +288,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                                     }
                                 }
                                 if (isEmpty(cursor)) {
-                                    adminClickEvent.setCursor(current);
+                                    adminClick.setCursor(current);
                                 }
                                 daysConfig.getConfig().set(day + ".reward", currentRewards);
                                 daysConfig.saveConfig();
