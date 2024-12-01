@@ -262,6 +262,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                         int rows = Math.min(Math.max((rewards.size() + 1) / 9 + 1, 3), 6);
                         InventoryGui adminInv = new InventoryGui(this, day + ". Rewards", Collections.nCopies(rows, String.join("", Collections.nCopies(9, "i"))).toArray(new String[0]));
                         Inventory dayEditInventory = getServer().createInventory(null, rows * 9);
+                        dayEditInventory.addItem(rewards.toArray(new ItemStack[0]));
                         GuiStorageElement dayStorageElement = new GuiStorageElement('i', dayEditInventory);
                         dayStorageElement.setApplyStorage(() -> {
                             daysConfig.getConfig().set(day + ".reward", Arrays.stream(dayEditInventory.getContents())
