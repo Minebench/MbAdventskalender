@@ -59,7 +59,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
     private ConfigAccessor playerConfig;
     private ConfigAccessor daysConfig;
     private final Multimap<UUID, Integer> retrievedDays = MultimapBuilder.hashKeys().linkedHashSetValues(24).build();
-    private final Multimap<Integer, ItemStack> dayRewards = MultimapBuilder.hashKeys().linkedListValues().build();
+    private final Multimap<String, ItemStack> dayRewards = MultimapBuilder.hashKeys().linkedListValues().build();
 
     private PluginCommand command;
 
@@ -118,7 +118,8 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         Replacer replacer = new Replacer().replace("year", String.valueOf(currentYear));
 
         dayRewards.clear();
-        for (int day = 1; day <= 24; day++) {
+
+        for (String day : daysConfig.getConfig().getKeys(false)) {
             List<?> mapList = daysConfig.getConfig().getList(day + ".reward");
             for (Object o : mapList) {
                 ItemStack item = o instanceof ItemStack ? (ItemStack) o : null;
@@ -219,12 +220,8 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
             if (day == 24) {
                 defType = "christmas";
             } else {
-                Calendar dayCal = Calendar.getInstance();
-                dayCal.set(Calendar.MONTH, Calendar.DECEMBER);
-                dayCal.set(Calendar.DAY_OF_MONTH, day);
-                if (dayCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                if ((advent = getAdvent(day)) > 0) {
                     defType = "advent";
-                    advent = 4 - ((24 - day) / 7);
                 }
             }
 
@@ -267,7 +264,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                         if (click.getType() != ClickType.MIDDLE) {
                             return true;
                         }
-                        List<ItemStack> rewards = (List<ItemStack>) dayRewards.get(day);
+                        List<ItemStack> rewards = (List<ItemStack>) dayRewards.get(String.valueOf(day));
                         int rows = Math.min(Math.max((rewards.size() + 1) / 9 + 1, 3), 6);
                         InventoryGui adminInv = new InventoryGui(this, day + ". Rewards", Collections.nCopies(rows, String.join("", Collections.nCopies(9, "i"))).toArray(new String[0]));
                         GuiElementGroup group = new GuiElementGroup('i');
@@ -284,7 +281,7 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                                 } else if (adminClick.getType() != ClickType.LEFT) {
                                     return true;
                                 }
-                                List<ItemStack> currentRewards = (List<ItemStack>) dayRewards.get(day);
+                                List<ItemStack> currentRewards = (List<ItemStack>) dayRewards.get(String.valueOf(day));
                                 if (isEmpty(cursor)) {
                                     if (adminClick.getSlot() < currentRewards.size()) {
                                         currentRewards.remove(adminClick.getSlot());
@@ -333,6 +330,16 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         return elements.toArray(new GuiElement[0]);
     }
 
+    private int getAdvent(int day) {
+        Calendar dayCal = Calendar.getInstance();
+        dayCal.set(Calendar.MONTH, Calendar.DECEMBER);
+        dayCal.set(Calendar.DAY_OF_MONTH, day);
+        if (dayCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            return 4 - ((24 - day) / 7);
+        }
+        return 0;
+    }
+
     private static boolean isEmpty(ItemStack itemStack) {
         return itemStack == null || itemStack.getType() == null || itemStack.isEmpty();
     }
@@ -343,11 +350,29 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
         playerConfig.saveConfig();
 
         if (dayRewards.containsKey(day)) {
-            for (ItemStack rest : player.getInventory().addItem(dayRewards.get(day).toArray(new ItemStack[0])).values()) {
+            for (ItemStack rest : player.getInventory().addItem(dayRewards.get(String.valueOf(day)).toArray(new ItemStack[0])).values()) {
                 player.getLocation().getWorld().dropItem(player.getLocation(), rest);
             }
         } else {
             player.sendMessage(ChatColor.RED + "No rewards defined for day " + day + "? :(");
+        }
+
+        int advent = getAdvent(day);
+        if (day == 1 && advent == 0) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.MONTH, Calendar.DECEMBER);
+            calendar.set(Calendar.DAY_OF_MONTH, 24);
+            if (calendar.get(Calendar.DAY_OF_WEEK) > Calendar.TUESDAY) {
+                advent = 1;
+            }
+        }
+        if (advent > 0) {
+            String key = "advent-" + advent;
+            if (dayRewards.containsKey(key)) {
+                for (ItemStack rest : player.getInventory().addItem(dayRewards.get(key).toArray(new ItemStack[0])).values()) {
+                    player.getLocation().getWorld().dropItem(player.getLocation(), rest);
+                }
+            }
         }
 
         player.sendMessage(getComponents("reward-received", "day", String.valueOf(day)));
