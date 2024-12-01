@@ -10,6 +10,7 @@ gui:
   # insert items
   filler:
     ==: org.bukkit.inventory.ItemStack
+    v: 3955
     type: SPRUCE_LEAVES
   icons:
     day:
