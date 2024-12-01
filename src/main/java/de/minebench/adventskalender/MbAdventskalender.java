@@ -28,6 +28,7 @@ import de.themoep.inventorygui.StaticGuiElement;
 import de.themoep.minedown.adventure.MineDown;
 import de.themoep.minedown.adventure.Replacer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -137,8 +138,8 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
 
         gui = new InventoryGui(this, getConfig().getString("gui.title"), getConfig().getStringList("gui.layout").toArray(new String[0]));
 
-        gui.setItemNameSetter((meta, string) -> meta.displayName(MineDown.parse(string)));
-        gui.setItemLoreSetter((meta, stringList) -> meta.lore(stringList.stream().map(MineDown::parse).toList()));
+        gui.setItemNameSetter((meta, string) -> meta.displayName(MineDown.parse(string).decoration(TextDecoration.ITALIC, false)));
+        gui.setItemLoreSetter((meta, stringList) -> meta.lore(stringList.stream().map(line -> MineDown.parse(line).decoration(TextDecoration.ITALIC, false)).toList()));
 
         gui.setFiller(filler);
         gui.addElement(new GuiElementGroup('d', buildElements()));
