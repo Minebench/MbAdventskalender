@@ -265,8 +265,11 @@ public final class MbAdventskalender extends JavaPlugin implements Listener {
                         dayEditInventory.addItem(rewards.toArray(new ItemStack[0]));
                         GuiStorageElement dayStorageElement = new GuiStorageElement('i', dayEditInventory);
                         dayStorageElement.setApplyStorage(() -> {
-                            daysConfig.getConfig().set(day + ".reward", Arrays.stream(dayEditInventory.getContents())
-                                    .filter(item -> item != null && !isEmpty(item)).toList());
+                            List<ItemStack> newRewards = Arrays.stream(dayEditInventory.getContents())
+                                    .filter(item -> item != null && !isEmpty(item)).toList();
+                            dayRewards.removeAll(String.valueOf(day));
+                            dayRewards.putAll(String.valueOf(day), newRewards);
+                            daysConfig.getConfig().set(day + ".reward", newRewards);
                             daysConfig.saveConfig();
                         });
                         adminInv.addElement(dayStorageElement);
